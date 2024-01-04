@@ -17,8 +17,6 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x27 for a 16 cha
 
 */
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);  // NewPing setup of pins and maximum distance.
-const int MIN_DISTANCE_SENZOR = 5;
-const int MAX_DISTANCE_SENZOR = 15;
 
 Servo myservo;  // create servo object to control a servo
 int pos = 0;
@@ -34,6 +32,10 @@ enum states { IDLE,
 int state = IDLE;
 int lives = 3;
 int IRvalueD = 0;
+long randNumber = random(3, 20);
+
+int MIN_DISTANCE_SENZOR = randNumber - 5;
+int MAX_DISTANCE_SENZOR = randNumber + 5;
 
 const int microphone_pin = 2;
 const int button_pin = 13;
@@ -62,6 +64,8 @@ void setup() {
   pinMode(led_rosu_dist, OUTPUT);
 
   pinMode(buzzerPin, OUTPUT);
+
+  randomSeed(analogRead(0));  // dai un pin care nu are nimic
 }
 
 void loop() {
@@ -81,6 +85,7 @@ void loop() {
           lcd.print("Sunet detectat");
           state = FIND_DISTANCE;
           delay(2000);
+          lcd.clear();
         }
       }
 
@@ -92,7 +97,11 @@ void loop() {
 
         int distance = sonar.ping_cm();  // Send ping, get distance in cm and print result (0 = outside set distance range)
 
-        lcd.setCursor(0, 0);      // Sets the location at which subsequent text written to the LCD will be displayed
+        lcd.setCursor(0, 0);
+        lcd.print("Move to ");
+        lcd.print(randNumber);
+
+        lcd.setCursor(0, 1);      // Sets the location at which subsequent text written to the LCD will be displayed
         lcd.print("Distance: ");  // Prints string "Distance" on the LCD
         if (distance < 10)
           lcd.print(" ");
@@ -112,6 +121,9 @@ void loop() {
             digitalWrite(led_verde_dist, LOW);
             digitalWrite(led_rosu_dist, HIGH);
             lcd.print("Ai pierdut");
+            digitalWrite(buzzerPin, HIGH);
+            delay(500);
+            digitalWrite(buzzerPin, LOW);
             delay(3000);
             lcd.clear();
             break;
@@ -133,6 +145,9 @@ void loop() {
             lcd.print("Mai incearca");
             digitalWrite(led_verde_dist, LOW);
             digitalWrite(led_rosu_dist, HIGH);
+            digitalWrite(buzzerPin, HIGH);
+            delay(500);
+            digitalWrite(buzzerPin, LOW);
             delay(1500);
             lcd.clear();
           }
@@ -145,6 +160,11 @@ void loop() {
 
         lcd.setCursor(0, 0);
         lcd.print("GAME OVER");
+
+        digitalWrite(buzzerPin, HIGH);
+        delay(500);
+        digitalWrite(buzzerPin, LOW);
+        delay(500);
 
         restart_game();
       }
@@ -220,6 +240,9 @@ void loop() {
 }
 
 void restart_game() {
+  digitalWrite(led_verde_dist, LOW);
+  digitalWrite(led_rosu_dist, LOW);
+
   // verificam butonul
   int button_reset = digitalRead(button_reset_pin);
 
@@ -241,11 +264,14 @@ void restart_game() {
 
 
     state = IDLE;
-    int lives = 3;
-    int IRvalueD = 0;
-    lcd.clear();
+    lives = 3;
+    IRvalueD = 0;
+    randNumber = random(3, 20);
+    MIN_DISTANCE_SENZOR = randNumber - 5;
+    MAX_DISTANCE_SENZOR = randNumber + 5;
 
     delay(2000);
+    lcd.clear();
   }
 }
 
