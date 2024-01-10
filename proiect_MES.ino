@@ -6,6 +6,7 @@
 
 #include <NewPing.h>
 
+// ultrasonic
 #define TRIGGER_PIN 9
 #define ECHO_PIN 10
 #define MAX_DISTANCE 400  // Maximum distance we want to measure (in centimeters).
@@ -19,7 +20,7 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x27 for a 16 cha
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);  // NewPing setup of pins and maximum distance.
 
 Servo myservo;  // create servo object to control a servo
-int pos = 0;
+int pos = 90;
 
 enum states { IDLE,
               FIND_DISTANCE,
@@ -37,14 +38,15 @@ long randNumber = random(3, 20);
 int MIN_DISTANCE_SENZOR = randNumber - 5;
 int MAX_DISTANCE_SENZOR = randNumber + 5;
 
-const int microphone_pin = 2;
+const int microphone_pin = 11;
 const int button_pin = 13;
 const int button_reset_pin = 12;
 const int ir_pin = 8;
 const int servo_pin = 3;
 const int led_verde_dist = A2;
 const int led_rosu_dist = A3;
-const int buzzerPin = A1;
+const int led_rosu_cutie = A1;
+const int buzzerPin = A0;
 
 void setup() {
   myservo.write(pos);
@@ -70,6 +72,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly
+  
 
   switch (state) {
     case IDLE:
@@ -114,7 +117,7 @@ void loop() {
         if (button == HIGH)  // s-a apasat
         {
           lives--;
-          if (lives < 0) {
+          if (lives <= 0) {
             state = GAME_OVER;
             lcd.clear();
             lcd.setCursor(0, 0);
@@ -177,13 +180,11 @@ void loop() {
         lcd.setCursor(0, 0);
         lcd.print("Open box");
 
-        for (pos = 0; pos <= 80; pos += 1) {  // goes from 0 degrees to 180 degrees
+        for (pos = 90; pos >= 0; pos -= 1) {  // goes from 180 degrees to 0 degrees
           digitalWrite(buzzerPin, HIGH);
-
-          // in steps of 1 degree
           myservo.write(pos);  // tell servo to go to position in variable 'pos'
-          delay(15);           // waits 15 ms for the servo to reach the position
-          digitalWrite(buzzerPin, LOW);
+          delay(15);
+          digitalWrite(buzzerPin, LOW);  // waits 15 ms for the servo to reach the position
         }
 
         delay(3000);
@@ -208,12 +209,16 @@ void loop() {
         lcd.setCursor(0, 0);
         lcd.print("Close box");
 
-        for (pos = 80; pos >= 0; pos -= 1) {  // goes from 180 degrees to 0 degrees
+        for (pos = 0; pos <= 90; pos += 1) {  // goes from 0 degrees to 180 degrees
           digitalWrite(buzzerPin, HIGH);
+
+          // in steps of 1 degree
           myservo.write(pos);  // tell servo to go to position in variable 'pos'
-          delay(15);
-          digitalWrite(buzzerPin, LOW);  // waits 15 ms for the servo to reach the position
+          delay(15);           // waits 15 ms for the servo to reach the position
+          digitalWrite(buzzerPin, LOW);
         }
+
+        
 
         delay(3000);
         lcd.clear();
@@ -269,6 +274,7 @@ void restart_game() {
     randNumber = random(3, 20);
     MIN_DISTANCE_SENZOR = randNumber - 5;
     MAX_DISTANCE_SENZOR = randNumber + 5;
+    pos = 90;
 
     delay(2000);
     lcd.clear();
