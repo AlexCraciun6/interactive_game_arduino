@@ -3,12 +3,13 @@
 ## Overview
 The Interactive Chest Project is a creative and educational Arduino-based endeavor that combines sound detection and distance testing to create an engaging interactive experience. Users activate the chest by clapping or snapping their fingers, initiating a sequence where they must pass a distance-based test to unlock the chest and claim a prize.
 
-## VIsual respresentation
+## Project Image
 
-## Project Images
+<img src="20240111_132318.jpg" alt="Game" width="1920">
 
 ## Demo
 
+[Click to see the demo](https://drive.google.com/file/d/1-HbAMneb_CkbjtMgT6UcyaFAOKFzM4x0/view?usp=drive_link)
 
 ## Components
 - Arduino UNO: Central control for the entire system.
